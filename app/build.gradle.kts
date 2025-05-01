@@ -63,4 +63,6 @@ dependencies {
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+
+    implementation("com.google.code.gson:gson:2.10.1")
 }

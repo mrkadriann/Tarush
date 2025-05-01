@@ -42,6 +42,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tarush.R
+import com.example.tarush.ScreenNavigation
 
 // Data class for product items
 data class Product(
@@ -54,7 +55,8 @@ data class Product(
     val shopName: String,
     val shopLogoResId: Int?,
     val hiddenshopName: String,
-    val hiddenshopLogoResId: Int?
+    val hiddenshopLogoResId: Int?,
+    val reviewSummary: String
 )
 
 // Data class for categories
@@ -67,7 +69,8 @@ data class Category(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    products: List<Product> = emptyList()
 ) {
     // Sample data
     val categories = remember {
@@ -80,13 +83,17 @@ fun HomeScreen(
         )
     }
 
-    val products = remember {
-        listOf(
-            Product("1", "WATSONS Cetirizine 10mg Tablet", 16, R.drawable.product_cetrizine, "Biñan City, Laguna", 10000, "WATSONS OFFICIAL STORE", R.drawable.icon_watsons, "WATSONS OFFICIAL STORE", R.drawable.icon_watsons),
-            Product("2", "Lucky Me! Pancit Canton", 109, R.drawable.product_pancit_kanton, "Quezon City", 9800, "", null, "", null),
-            Product("3", "Mini Floral Dress", 149, R.drawable.product_mini_floraldress, "Manila", 10000, "", null, "", null),
-            Product("4", "Adidas Running Galaxy 6 Shoes Blue", 2400, R.drawable.product_shoes, "Makati", 10000, "", null, "", null)
-        )
+    val productList = if (products.isEmpty()) {
+        remember {
+            listOf(
+                Product("1", "WATSONS Cetirizine 10mg Tablet", 16, R.drawable.product_cetrizine, "Biñan City, Laguna", 10000, "WATSONS OFFICIAL STORE", R.drawable.icon_watsons, "WATSONS", R.drawable.icon_watsons, "These tablets effectively alleviate allergy symptoms."),
+                Product("2", "Lucky Me! Pancit Canton", 109, R.drawable.product_pancit_kanton, "Quezon City", 9800, "", null, "LUCKY ME", null, "Popular instant noodles with a rich flavor."),
+                Product("3", "Mini Floral Dress", 149, R.drawable.product_mini_floraldress, "Manila", 10000, "", null, "FASHION OUTLET", null, "Beautiful floral pattern mini dress."),
+                Product("4", "Adidas Running Galaxy 6 Shoes Blue", 2400, R.drawable.product_shoes, "Makati", 10000, "", null, "ADIDAS", null, "Premium running shoes with excellent cushioning.")
+            )
+        }
+    } else {
+        products
     }
 
     val view = LocalView.current
@@ -325,8 +332,14 @@ fun HomeScreen(
                         .weight(1f)
                         .padding(bottom = paddingValues.calculateBottomPadding())
                 ) {
-                    items(products) { product ->
-                        ProductCard(product = product)
+                    items(productList) { product ->
+                        ProductCard(
+                            product = product,
+                            onProductClick = {
+                                // Navigate to product detail screen with the product ID
+                                navController.navigate(ScreenNavigation.Screen.ProductDetail.createRoute(product.id))
+                            }
+                        )
                     }
                 }
             }
@@ -410,7 +423,9 @@ fun CategoryItem(category: Category) {
 }
 
 @Composable
-fun ProductCard(product: Product) {
+fun ProductCard(
+    product: Product,
+    onProductClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -422,7 +437,7 @@ fun ProductCard(product: Product) {
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
-        onClick = { /* Handle product click */ }
+        onClick =  onProductClick
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
