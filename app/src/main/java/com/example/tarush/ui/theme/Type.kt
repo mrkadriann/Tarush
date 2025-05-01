@@ -16,9 +16,10 @@ val interFamily = FontFamily(
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-
     titleLarge = TextStyle(
-
+        fontFamily = interFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 36.sp
     )
 
     /*bodyLarge = TextStyle(

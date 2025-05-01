@@ -37,10 +37,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.tarush.R
+import com.example.tarush.ScreenNavigation
+import com.example.tarush.ui.theme.TarushTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    navController: NavController = rememberNavController(),
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -59,7 +65,7 @@ fun LoginScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(50.dp)
                 .background(
                     brush = Brush.horizontalGradient(colors = gradientColors)
                 )
@@ -81,7 +87,6 @@ fun LoginScreen() {
                     .size(180.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // TODO: Replace this comment with your logo implementation
                 Image(
                     painter = painterResource(id = R.drawable.tarush_logo),
                     contentDescription = "Logo",
@@ -96,15 +101,14 @@ fun LoginScreen() {
             // Login text
             Text(
                 text = "Login",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
             Text(
                 text = "Sign in your account",
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -115,6 +119,11 @@ fun LoginScreen() {
                 onValueChange = { username = it },
                 placeholder = { Text("Username") },
                 leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.user_solid),
+                        contentDescription = "Username Icon",
+                        modifier = Modifier.size(24.dp)
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,6 +147,11 @@ fun LoginScreen() {
                 onValueChange = { password = it },
                 placeholder = { Text("Password") },
                 leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.key_solid),
+                        contentDescription = "Password Icon",
+                        modifier = Modifier.size(24.dp)
+                    )
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
@@ -158,7 +172,7 @@ fun LoginScreen() {
 
             // Login button with gradient
             Button(
-                onClick = { /* Handle login */ },
+                onClick = { navController.navigate(ScreenNavigation.Screen.Home.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -307,7 +321,7 @@ fun LoginScreen() {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    MaterialTheme {
+    TarushTheme {
         LoginScreen()
     }
 }
