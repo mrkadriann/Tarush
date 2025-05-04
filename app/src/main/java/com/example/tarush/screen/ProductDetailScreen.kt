@@ -2,7 +2,9 @@ package com.example.tarush.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,21 +13,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tarush.R
+import com.example.tarush.ScreenNavigation
 
 @Composable
 fun ProductDetailScreen(
@@ -39,11 +35,15 @@ fun ProductDetailScreen(
         topBar = {
             TopAppBar(
                 product = product,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                navController = navController
             )
         },
         bottomBar = {
-            BottomActionBar()
+            BottomActionBar(
+                navController = navController,
+                product = product,
+                onBuyClick = { navController.navigate(ScreenNavigation.Screen.Checkout.createRoute(product.id)) })
         },
     ) { paddingValues ->
         Column(
@@ -67,7 +67,8 @@ fun ProductDetailScreen(
 @Composable
 fun TopAppBar(
     product: Product,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navController: NavController
 ) {
     Surface(
         modifier = Modifier
@@ -122,7 +123,7 @@ fun TopAppBar(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "${product.hiddenshopName.uppercase()} OFFICIAL STORE",
+                    text = "${product.hiddenshopName.uppercase()}",
                     color = Color(0xFF00A9B7),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -131,7 +132,7 @@ fun TopAppBar(
 
             // Right side - Cart icon and more menu
             Row {
-                IconButton(onClick = { /* Handle cart navigation */ }) {
+                IconButton(onClick = { navController.navigate(ScreenNavigation.Screen.Cart.route) }) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
                         contentDescription = "Cart",
@@ -197,16 +198,46 @@ fun ProductInfoSection(product: Product) {
             Text(
                 text = "₱${product.price}",
                 color = Color.Blue,
-                fontSize = 24.sp,
+                fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Image(
+                painter = painterResource(R.drawable.icon_share),
+                contentDescription = "Share",
+                modifier = Modifier.size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Text(
+                text = "${product.soldCount}+ sold",
+                color = Color.Black,
+                fontSize = 14.sp
+            )
+
+            IconButton(onClick = { /* Handle favorite */ }) {
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = "Add to Favorites",
+                    tint = Color.Gray
+                )
+            }
         }
 
         Text(
             text = product.name,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Color.Black
+        )
+
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp
         )
 
         // Delivery info section
@@ -229,12 +260,14 @@ fun ProductInfoSection(product: Product) {
             ) {
                 Text(
                     text = "Guaranteed to get today (Mar 24), with shipping fee",
-                    fontSize = 14.sp
+                    fontSize = 12.sp,
+                    color = Color.Black
                 )
                 Text(
                     text = "₱0 - ₱55",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
             }
 
@@ -245,7 +278,10 @@ fun ProductInfoSection(product: Product) {
             )
         }
 
-        Divider()
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp
+        )
 
         // Authentic guarantee
         Row(
@@ -265,7 +301,8 @@ fun ProductInfoSection(product: Product) {
             Text(
                 text = "100% Authentic  •  Free & Easy Returns",
                 fontSize = 14.sp,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                color = Color.Black
             )
 
             Icon(
@@ -275,7 +312,10 @@ fun ProductInfoSection(product: Product) {
             )
         }
 
-        Divider()
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp
+        )
 
         // Cashback info
         Row(
@@ -295,7 +335,8 @@ fun ProductInfoSection(product: Product) {
             Text(
                 text = "₱50 cashback if your order arrives late.",
                 fontSize = 14.sp,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                color = Color.Black
             )
 
             Icon(
@@ -305,7 +346,10 @@ fun ProductInfoSection(product: Product) {
             )
         }
 
-        Divider()
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp
+        )
 
         // Product ratings
         Row(
@@ -317,7 +361,8 @@ fun ProductInfoSection(product: Product) {
             Text(
                 text = "4.8",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 20.sp,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.width(4.dp))
@@ -326,23 +371,30 @@ fun ProductInfoSection(product: Product) {
                 imageVector = Icons.Default.Star,
                 contentDescription = "Rating Star",
                 tint = Color(0xFFFFB700),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(24.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = "Product Ratings (1.5k)",
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = Color.Black
             )
         }
+
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp
+        )
 
         // Review summary
         Text(
             text = "Review Summary",
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+            color = Color.Black
         )
 
         Text(
@@ -350,143 +402,87 @@ fun ProductInfoSection(product: Product) {
             fontSize = 14.sp,
             color = Color.DarkGray
         )
-
-        // Sold count
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share",
-                tint = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            Text(
-                text = "${product.soldCount}+ sold",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(onClick = { /* Handle favorite */ }) {
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = "Add to Favorites",
-                    tint = Color.Gray
-                )
-            }
-        }
     }
 }
 
 @Composable
-fun BottomActionBar() {
+fun BottomActionBar(
+    navController: NavController,
+    product: Product,
+    onBuyClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(65.dp),
-        shadowElevation = 8.dp
+            .height(80.dp),
+        shadowElevation = 8.dp,
+        color = Color.White
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             // Add to Cart button
-            Button(
-                onClick = { /* Handle add to cart */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Gray
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                border = BorderStroke(1.dp, Color.LightGray)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { }
             ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Add to Cart"
+                Image(
+                    painter = painterResource(id = R.drawable.icon_shopping),
+                    contentDescription = "Add to Cart",
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray),
+                    modifier = Modifier.size(42.dp)
                 )
-
-                Spacer(modifier = Modifier.width(4.dp))
-
                 Text(
                     text = "Add to Cart",
-                    fontWeight = FontWeight.Medium
+                    fontSize = 14.sp,
+                    color = Color.Gray
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Buy Now button
-            Button(
-                onClick = { /* Handle buy now */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFBB6BD9),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = "Buy Now",
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Chat with seller button
-            IconButton(
-                onClick = { /* Handle chat with seller */ },
-                modifier = Modifier.size(48.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Button(
+                    onClick =  onBuyClick ,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFBB6BD9),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .padding(horizontal = 16.dp)// Add shadow here
+                        .width(200.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.icon_chat),
-                        contentDescription = "Chat with Seller",
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray),
-                        modifier = Modifier.size(24.dp)
-                    )
-
                     Text(
-                        text = "Chat",
-                        fontSize = 10.sp,
-                        color = Color.Gray
+                        text = "Buy Now",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
                     )
                 }
             }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icon_chat),
+                    contentDescription = "Chat with Seller",
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray),
+                    modifier = Modifier.size(42.dp)
+                )
+
+                Text(
+                    text = "Chat Seller",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ProductDetailScreenPreview() {
-    // Sample product for preview
-    val sampleProduct = Product(
-        id = "1",
-        name = "WATSONS Cetirizine 10mg Tablet (Sold per tablet)",
-        price = 16,
-        imageResId = null, // Replace with actual resource ID
-        location = "Manila",
-        soldCount = 10000,
-        shopName = "Watsons",
-        shopLogoResId = null, // Replace with actual resource ID
-        hiddenshopName = "Watsons",
-        hiddenshopLogoResId = null, // Replace with actual resource ID
-        reviewSummary = "These tablets effectively alleviate allergy symptoms. They provide relief from minor allergies and are effective within a short period. This product has an extended shelf life."
-    )
 }

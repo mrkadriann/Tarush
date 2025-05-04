@@ -11,5 +11,12 @@ sealed class ScreenNavigation(val Route: String) {
                 return "productDetail/$productId"
             }
         }
+        object Checkout : Screen("checkout/{productId}") {
+            fun createRoute(productId: String): String {
+                return "checkout/$productId"
+            }
+        }
+        object Cart : Screen("cart")
+        object Notification : Screen("notification")
     }
 }

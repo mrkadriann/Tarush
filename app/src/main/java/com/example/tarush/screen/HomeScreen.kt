@@ -1,6 +1,5 @@
 package com.example.tarush.screen
 
-import android.R.color
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -33,11 +33,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -72,6 +70,8 @@ fun HomeScreen(
     navController: NavController = rememberNavController(),
     products: List<Product> = emptyList()
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
     // Sample data
     val categories = remember {
         listOf(
@@ -86,10 +86,10 @@ fun HomeScreen(
     val productList = if (products.isEmpty()) {
         remember {
             listOf(
-                Product("1", "WATSONS Cetirizine 10mg Tablet", 16, R.drawable.product_cetrizine, "Biñan City, Laguna", 10000, "WATSONS OFFICIAL STORE", R.drawable.icon_watsons, "WATSONS", R.drawable.icon_watsons, "These tablets effectively alleviate allergy symptoms."),
-                Product("2", "Lucky Me! Pancit Canton", 109, R.drawable.product_pancit_kanton, "Quezon City", 9800, "", null, "LUCKY ME", null, "Popular instant noodles with a rich flavor."),
+                Product("1", "WATSONS Cetirizine 10mg Tablet (Sold per tablet)", 16, R.drawable.product_cetrizine, "Biñan City, Laguna", 10000, "WATSONS OFFICIAL STORE", R.drawable.icon_watsons, "WATSONS", R.drawable.icon_watsons, "These tablets effectively alleviate allergy symptoms."),
+                Product("2", "Lucky Me! Pancit Canton", 109, R.drawable.product_pancit_kanton, "Quezon City", 9800, "", null, "LUCKY ME STORE", null, "Popular instant noodles with a rich flavor."),
                 Product("3", "Mini Floral Dress", 149, R.drawable.product_mini_floraldress, "Manila", 10000, "", null, "FASHION OUTLET", null, "Beautiful floral pattern mini dress."),
-                Product("4", "Adidas Running Galaxy 6 Shoes Blue", 2400, R.drawable.product_shoes, "Makati", 10000, "", null, "ADIDAS", null, "Premium running shoes with excellent cushioning.")
+                Product("4", "Adidas Running Galaxy 6 Shoes Blue", 2400, R.drawable.product_shoes, "Makati", 10000, "", null, "ADIDAS STORE", null, "Premium running shoes with excellent cushioning.")
             )
         }
     } else {
@@ -158,7 +158,7 @@ fun HomeScreen(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable { /* Navigate to Notifications */ }
+                        modifier = Modifier.clickable { navController.navigate(ScreenNavigation.Screen.Notification.route) }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
@@ -226,15 +226,16 @@ fun HomeScreen(
                         ) {
                             // Search field
                             OutlinedTextField(
-                                value = "",
-                                onValueChange = { },
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
                                 placeholder = {
                                     Text(
                                         "Search",
                                         color = Color.Gray,
                                         fontSize = 16.sp,
                                         modifier = Modifier.padding(start = 4.dp)
-                                    ) },
+                                    )
+                                },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Search,
@@ -245,19 +246,19 @@ fun HomeScreen(
                                 },
                                 trailingIcon = {
                                     Image(
-                                        painter = painterResource(id = R.drawable.icon_camera),
-                                        contentDescription = "Filter",
-                                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Black),
+                                        painter = painterResource(id = android.R.drawable.ic_menu_camera), // Replace with your camera icon
+                                        contentDescription = "Camera",
+                                        colorFilter = ColorFilter.tint(Color.Black),
                                         modifier = Modifier
                                             .size(22.dp)
-                                            .clickable { }
+                                            .clickable { /* Camera action */ }
                                     )
                                 },
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(50.dp)
                                     .shadow(
-                                        elevation = 50.dp,
+                                        elevation = 8.dp,
                                         shape = RoundedCornerShape(12.dp),
                                         spotColor = Color.Black
                                     ),
@@ -280,7 +281,7 @@ fun HomeScreen(
                                 tint = Color.White,
                                 modifier = Modifier
                                     .size(24.dp)
-                                    .clickable { }
+                                    .clickable { navController.navigate(ScreenNavigation.Screen.Cart.route) }
                             )
 
                             Spacer(modifier = Modifier.width(12.dp))
@@ -610,13 +611,5 @@ fun HeaderWithShadow(
         ) {
             content()
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    MaterialTheme {
-        HomeScreen()
     }
 }
