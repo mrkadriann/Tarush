@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tarush.R
+import com.example.tarush.ScreenNavigation
 
 
 @Composable
@@ -133,6 +134,15 @@ fun CartScreen(
                         selectedProducts[product.id] = selected
                     }
                     allSelected.value = selected
+                },
+                onCheckoutClick = {
+                    if (selectedItemCount > 0) {
+                        // Navigate to Order Success
+                        navController.navigate(ScreenNavigation.Screen.Success.route)
+                    } else {
+                        // Navigate to Order Failed
+                        navController.navigate(ScreenNavigation.Screen.Failed.route)
+                    }
                 }
             )
         }
@@ -513,7 +523,8 @@ fun VoucherSelectionBar(
     subtotal: Double,
     selectedItemCount: Int,
     allSelected: Boolean,
-    onSelectAllChange: (Boolean) -> Unit
+    onSelectAllChange: (Boolean) -> Unit,
+    onCheckoutClick: () -> Unit
 ) {
     BottomAppBar(
         containerColor = Color.White,
@@ -598,7 +609,7 @@ fun VoucherSelectionBar(
                     )
 
                     Button(
-                        onClick = { /* Handle checkout */ },
+                        onClick = { onCheckoutClick() },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF9C7CF4)
                         ),

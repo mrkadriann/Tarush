@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tarush.screen.CartScreen
 import com.example.tarush.screen.CheckOutScreen
+import com.example.tarush.screen.EditProfileScreen
 import com.example.tarush.screen.HomeScreen
 import com.example.tarush.screen.LoginScreen
 import com.example.tarush.screen.NotificationScreen
@@ -112,6 +113,24 @@ fun TarushApp() {
             ScreenNavigation.Screen.Notification.route
         ) {
             NotificationScreen(navController)
+        }
+
+        composable(
+            ScreenNavigation.Screen.Profile.route
+        ) {
+            EditProfileScreen(navController)
+        }
+
+        composable(
+            ScreenNavigation.Screen.Success.route
+        ) {
+            com.example.tarush.screen.OrderSuccessScreen(navController)
+        }
+
+        composable(
+            ScreenNavigation.Screen.Failed.route
+        ) {
+            com.example.tarush.screen.OrderFailedScreen(navController)
         }
     }
 }

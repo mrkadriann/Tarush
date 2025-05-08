@@ -174,7 +174,7 @@ fun HomeScreen(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable { /* Navigate to Profile */ }
+                        modifier = Modifier.clickable { navController.navigate(ScreenNavigation.Screen.Profile.route) }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Person,

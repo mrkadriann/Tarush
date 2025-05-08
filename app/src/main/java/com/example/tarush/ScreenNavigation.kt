@@ -18,5 +18,8 @@ sealed class ScreenNavigation(val Route: String) {
         }
         object Cart : Screen("cart")
         object Notification : Screen("notification")
+        object Profile : Screen("profile")
+        object Success : Screen("success")
+        object Failed : Screen("failed")
     }
 }
